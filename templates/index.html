@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>古钱币识别系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'SimHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #e7ecff 0%, #ffeaf5 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #8ea4ff 0%, #ff9cd4 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 15px 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: #667eea;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            background: #f8f9ff;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #764ba2;
+            background: #e8ebff;
+        }
+
+        .upload-icon {
+            font-size: 4em;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .preview-images {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .preview-item {
+            position: relative;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 10px;
+            background: white;
+        }
+
+        .preview-item img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 5px;
+        }
+
+        .preview-item .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .result-area {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 15px;
+            display: none;
+        }
+
+        .result-area.show {
+            display: block;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .result-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            padding: 10px;
+            background: #f8f9ff;
+            border-radius: 5px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .history-text {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff9e6;
+            border-left: 4px solid #ffc107;
+            border-radius: 5px;
+            line-height: 1.8;
+            color: #666;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #c62828;
+        }
+
+        .success-message {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #2e7d32;
+        }
+
+        .batch-result-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .batch-result-item h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .coin-group {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .coin-group-header {
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .coin-group-header h3 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .coin-images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .coin-image-item {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+            background: #f8f9ff;
+            text-align: center;
+        }
+
+        .coin-image-item img {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 5px;
+            margin-bottom: 8px;
+        }
+
+        .coin-image-item .filename {
+            font-size: 0.9em;
+            color: #666;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏛️ 古钱币识别系统</h1>
+            <p>基于深度学习的古钱币自动识别与分类系统</p>
+        </div>
+
+        <div class="content">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('single')">单币识别</button>
+                <button class="tab" onclick="switchTab('batch')">多币识别</button>
+            </div>
+
+            <!-- 单币识别 -->
+            <div id="single-tab" class="tab-content active">
+                <h2>上传正反面图片进行识别</h2>
+                <div class="upload-area" id="single-upload-area">
+                    <div class="upload-icon">📸</div>
+                    <div class="upload-text">请上传古钱币的正反面图片</div>
+                    <div style="margin: 20px 0;">
+                        <label>
+                            <input type="file" class="file-input" id="obverse-input" accept="image/*">
+                            <button class="btn" onclick="document.getElementById('obverse-input').click()">选择正面图片</button>
+                        </label>
+                        <label>
+                            <input type="file" class="file-input" id="reverse-input" accept="image/*">
+                            <button class="btn" onclick="document.getElementById('reverse-input').click()">选择反面图片</button>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="preview-images" id="single-preview"></div>
+
+                <div style="text-align: center;">
+                    <button class="btn" id="single-predict-btn" onclick="predictSingle()" disabled>开始识别</button>
+                </div>
+
+                <div class="loading" id="single-loading">
+                    <div class="spinner"></div>
+                    <div>正在识别中，请稍候...</div>
+                </div>
+
+                <div class="result-area" id="single-result"></div>
+            </div>
+
+            <!-- 多币识别 -->
+            <div id="batch-tab" class="tab-content">
+                <h2>批量上传图片进行识别（单次最多50张，超过50张可使用分批次识别）</h2>
+                <div class="upload-area" id="batch-upload-area" 
+                     ondragover="handleDragOver(event)" 
+                     ondragleave="handleDragLeave(event)" 
+                     ondrop="handleDrop(event)">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">拖拽图片到此处或点击选择</div>
+                    <input type="file" class="file-input" id="batch-input" accept="image/*" multiple>
+                    <button class="btn" onclick="document.getElementById('batch-input').click()">选择图片</button>
+                    <div style="margin-top: 10px; color: #999; font-size: 0.9em;">
+                        已选择 <span id="batch-count">0</span> 张图片
+                        <span id="batch-warning" style="color: #ff9800; margin-left: 10px; display: none; font-weight: bold;">
+                            ⚠ 超过50张，建议使用"分批次识别全部"
+                        </span>
+                    </div>
+                </div>
+
+                <div style="text-align: center;">
+                    <button class="btn" id="batch-predict-btn" onclick="predictBatch()" disabled>开始批量识别</button>
+                    <button class="btn" id="batch-predict-batches-btn" onclick="predictBatchInBatches()" disabled 
+                            style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                        分批次识别全部
+                    </button>
+                </div>
+
+                <div class="loading" id="batch-loading">
+                    <div class="spinner"></div>
+                    <div>正在识别中，请稍候...</div>
+                </div>
+
+                <div class="result-area" id="batch-result"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let singleFiles = { obverse: null, reverse: null };
+        let batchFiles = [];
+
+        function switchTab(tab) {
+            // 切换标签
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            if (tab === 'single') {
+                document.querySelector('.tab').classList.add('active');
+                document.getElementById('single-tab').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('batch-tab').classList.add('active');
+            }
+        }
+
+        // 单币识别文件选择
+        async function validateSide(file, expectedSide) {
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('expected_side', expectedSide);
+            try {
+                const resp = await fetch('/api/check_image', { method: 'POST', body: formData });
+                const data = await resp.json();
+                return data;
+            } catch (e) {
+                return { success: false, error: '网络或服务异常，请稍后重试' };
+            }
+        }
+
+        document.getElementById('obverse-input').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const res = await validateSide(file, 'obverse');
+            if (res.success === false) {
+                alert(res.message || res.error || '正面图片不符合要求，请重新上传正面。');
+                this.value = '';
+                singleFiles.obverse = null;
+                const existing = document.getElementById('single-obverse');
+                if (existing) existing.remove();
+                checkSingleReady();
+                return;
+            }
+            singleFiles.obverse = file;
+            previewSingleImage('obverse', file);
+            checkSingleReady();
+        });
+
+        document.getElementById('reverse-input').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const res = await validateSide(file, 'reverse');
+            if (res.success === false) {
+                alert(res.message || res.error || '反面图片不符合要求，请重新上传反面。');
+                this.value = '';
+                singleFiles.reverse = null;
+                const existing = document.getElementById('single-reverse');
+                if (existing) existing.remove();
+                checkSingleReady();
+                return;
+            }
+            singleFiles.reverse = file;
+            previewSingleImage('reverse', file);
+            checkSingleReady();
+        });
+
+        function previewSingleImage(type, file) {
+            const preview = document.getElementById('single-preview');
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const div = document.createElement('div');
+                div.className = 'preview-item';
+                div.innerHTML = `
+                    <img src="${e.target.result}" alt="${type}">
+                    <button class="remove-btn" onclick="removeSingleImage('${type}')">×</button>
+                `;
+                const existing = document.getElementById(`single-${type}`);
+                if (existing) existing.remove();
+                div.id = `single-${type}`;
+                preview.appendChild(div);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeSingleImage(type) {
+            singleFiles[type] = null;
+            document.getElementById(`single-${type}`).remove();
+            document.getElementById(`${type}-input`).value = '';
+            checkSingleReady();
+        }
+
+        function checkSingleReady() {
+            const btn = document.getElementById('single-predict-btn');
+            btn.disabled = !(singleFiles.obverse && singleFiles.reverse);
+        }
+
+        // 批量识别文件选择
+        document.getElementById('batch-input').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            batchFiles = files;
+            updateBatchPreview();
+            checkBatchReady();
+            
+            // 如果超过50张，提示用户可以使用分批次识别
+            if (files.length > 50) {
+                setTimeout(() => {
+                    alert(
+                        `您已选择 ${files.length} 张图片（超过50张限制）。\n\n` +
+                        `• 点击"开始批量识别"：只识别前50张\n` +
+                        `• 点击"分批次识别全部"：识别全部 ${files.length} 张（推荐）`
+                    );
+                }, 100);
+            }
+        });
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('dragover');
+            const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+            batchFiles = files;
+            updateBatchPreview();
+            checkBatchReady();
+            
+            // 如果超过50张，提示用户可以使用分批次识别
+            if (files.length > 50) {
+                setTimeout(() => {
+                    alert(
+                        `您已选择 ${files.length} 张图片（超过50张限制）。\n\n` +
+                        `• 点击"开始批量识别"：只识别前50张\n` +
+                        `• 点击"分批次识别全部"：识别全部 ${files.length} 张（推荐）`
+                    );
+                }, 100);
+            }
+        }
+
+        function updateBatchPreview() {
+            // 只更新文件计数，不显示预览图片
+            const countElement = document.getElementById('batch-count');
+            const warningElement = document.getElementById('batch-warning');
+            
+            countElement.textContent = batchFiles.length;
+            
+            // 如果超过50张，显示警告提示
+            if (batchFiles.length > 50) {
+                warningElement.style.display = 'inline';
+            } else {
+                warningElement.style.display = 'none';
+            }
+        }
+
+        function checkBatchReady() {
+            const btn = document.getElementById('batch-predict-btn');
+            const batchBtn = document.getElementById('batch-predict-batches-btn');
+            btn.disabled = batchFiles.length === 0;
+            // 分批次识别按钮只在超过50个文件时可用
+            batchBtn.disabled = batchFiles.length === 0 || batchFiles.length <= 50;
+        }
+
+        // 单币识别
+        async function predictSingle() {
+            if (!singleFiles.obverse || !singleFiles.reverse) {
+                alert('请上传正反面两张图片！');
+                return;
+            }
+
+            const loading = document.getElementById('single-loading');
+            const result = document.getElementById('single-result');
+            const btn = document.getElementById('single-predict-btn');
+
+            loading.classList.add('show');
+            result.classList.remove('show');
+            btn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('obverse', singleFiles.obverse);
+            formData.append('reverse', singleFiles.reverse);
+
+            try {
+                const response = await fetch('/api/single_predict', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                loading.classList.remove('show');
+                btn.disabled = false;
+
+                if (data.success !== false) {
+                    displaySingleResult(data);
+                } else {
+                    displaySingleResult(data);  // 也处理识别失败的情况
+                }
+            } catch (error) {
+                loading.classList.remove('show');
+                btn.disabled = false;
+                result.innerHTML = `<div class="error-message">网络错误: ${error.message}</div>`;
+                result.classList.add('show');
+            }
+        }
+
+        function displaySingleResult(data) {
+            const result = document.getElementById('single-result');
+            let html = '';
+            
+            // 根据匹配状态显示不同的结果
+            if (data.match_status === 'matched') {
+                // 匹配：显示匹配标注和结果
+                html = `
+                    <div class="success-message">
+                        <strong>✓ 匹配</strong> - 正反面为同一种币种：${data.coin_name}
+                    </div>
+                    <div class="result-card">
+                        <h3>识别结果：${data.coin_name}</h3>
+                        <div class="result-info">
+                            <div class="info-item">
+                                <div class="info-label">币种名称</div>
+                                <div class="info-value">${data.info.name}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">朝代</div>
+                                <div class="info-value">${data.info.dynasty}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">材质</div>
+                                <div class="info-value">${data.info.material}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">置信度</div>
+                                <div class="info-value">${(data.confidence * 100).toFixed(2)}%</div>
+                            </div>
+                        </div>
+                        <div class="history-text">
+                            <strong>历史介绍：</strong>${data.info.history}
+                        </div>
+                    </div>
+                `;
+            } else if (data.match_status === 'not_matched') {
+                // 不匹配：分别输出并提示
+                const obverse = data.obverse;
+                const reverse = data.reverse;
+                html = `
+                    <div class="error-message" style="background: #fff3cd; color: #856404; border-left-color: #ffc107;">
+                        <strong>⚠ 不匹配</strong> - 正反面识别为不同币种，请检查你上传的图片
+                    </div>
+                    <div class="result-card">
+                        <h3>正面识别结果：${obverse.coin_name}</h3>
+                        <div class="result-info">
+                            <div class="info-item">
+                                <div class="info-label">币种名称</div>
+                                <div class="info-value">${obverse.info.name}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">朝代</div>
+                                <div class="info-value">${obverse.info.dynasty}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">材质</div>
+                                <div class="info-value">${obverse.info.material}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">置信度</div>
+                                <div class="info-value">${(obverse.confidence * 100).toFixed(2)}%</div>
+                            </div>
+                        </div>
+                        <div class="history-text">
+                            <strong>历史介绍：</strong>${obverse.info.history}
+                        </div>
+                    </div>
+                    <div class="result-card">
+                        <h3>反面识别结果：${reverse.coin_name}</h3>
+                        <div class="result-info">
+                            <div class="info-item">
+                                <div class="info-label">币种名称</div>
+                                <div class="info-value">${reverse.info.name}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">朝代</div>
+                                <div class="info-value">${reverse.info.dynasty}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">材质</div>
+                                <div class="info-value">${reverse.info.material}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">置信度</div>
+                                <div class="info-value">${(reverse.confidence * 100).toFixed(2)}%</div>
+                            </div>
+                        </div>
+                        <div class="history-text">
+                            <strong>历史介绍：</strong>${reverse.info.history}
+                        </div>
+                    </div>
+                `;
+            } else if (data.match_status === 'both_failed') {
+                // 都识别失败
+                html = `
+                    <div class="error-message">
+                        <strong>✗ 识别失败</strong> - 正反面图片均识别失败
+                    </div>
+                    <div class="result-card">
+                        <h3>正面识别失败</h3>
+                        <div class="error-message">${data.obverse_error || '识别失败'}</div>
+                    </div>
+                    <div class="result-card">
+                        <h3>反面识别失败</h3>
+                        <div class="error-message">${data.reverse_error || '识别失败'}</div>
+                    </div>
+                `;
+            } else if (data.match_status === 'obverse_failed') {
+                // 正面识别失败
+                const reverse = data.reverse;
+                html = `
+                    <div class="error-message">
+                        <strong>✗ 部分失败</strong> - 正面识别失败，反面识别成功
+                    </div>
+                    <div class="result-card">
+                        <h3>正面识别失败</h3>
+                        <div class="error-message">${data.obverse_error || '识别失败'}</div>
+                    </div>
+                    <div class="result-card">
+                        <h3>反面识别结果：${reverse.info.name}</h3>
+                        <div class="result-info">
+                            <div class="info-item">
+                                <div class="info-label">币种名称</div>
+                                <div class="info-value">${reverse.info.name}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">朝代</div>
+                                <div class="info-value">${reverse.info.dynasty}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">材质</div>
+                                <div class="info-value">${reverse.info.material}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">置信度</div>
+                                <div class="info-value">${(reverse.confidence * 100).toFixed(2)}%</div>
+                            </div>
+                        </div>
+                        <div class="history-text">
+                            <strong>历史介绍：</strong>${reverse.info.history}
+                        </div>
+                    </div>
+                `;
+            } else if (data.match_status === 'reverse_failed') {
+                // 反面识别失败
+                const obverse = data.obverse;
+                html = `
+                    <div class="error-message">
+                        <strong>✗ 部分失败</strong> - 反面识别失败，正面识别成功
+                    </div>
+                    <div class="result-card">
+                        <h3>正面识别结果：${obverse.info.name}</h3>
+                        <div class="result-info">
+                            <div class="info-item">
+                                <div class="info-label">币种名称</div>
+                                <div class="info-value">${obverse.info.name}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">朝代</div>
+                                <div class="info-value">${obverse.info.dynasty}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">材质</div>
+                                <div class="info-value">${obverse.info.material}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">置信度</div>
+                                <div class="info-value">${(obverse.confidence * 100).toFixed(2)}%</div>
+                            </div>
+                        </div>
+                        <div class="history-text">
+                            <strong>历史介绍：</strong>${obverse.info.history}
+                        </div>
+                    </div>
+                    <div class="result-card">
+                        <h3>反面识别失败</h3>
+                        <div class="error-message">${data.reverse_error || '识别失败'}</div>
+                    </div>
+                `;
+            } else {
+                // 未知状态
+                html = `<div class="error-message">${data.error || '识别失败'}</div>`;
+            }
+            
+            result.innerHTML = html;
+            result.classList.add('show');
+        }
+
+        // 批量识别
+        async function predictBatch() {
+            if (batchFiles.length === 0) {
+                alert('请至少选择一张图片！');
+                return;
+            }
+
+            // 如果超过50个，弹窗提示
+            if (batchFiles.length > 50) {
+                const confirm = window.confirm(
+                    `您选择了 ${batchFiles.length} 张图片，超过限制（50张）。\n` +
+                    `系统将只识别前50张图片，剩余 ${batchFiles.length - 50} 张将被忽略。\n\n` +
+                    `是否继续识别前50张？`
+                );
+                if (!confirm) {
+                    return;
+                }
+            }
+
+            const loading = document.getElementById('batch-loading');
+            const result = document.getElementById('batch-result');
+            const btn = document.getElementById('batch-predict-btn');
+            const batchBtn = document.getElementById('batch-predict-batches-btn');
+
+            loading.classList.add('show');
+            result.classList.remove('show');
+            btn.disabled = true;
+            batchBtn.disabled = true;
+
+            const formData = new FormData();
+            batchFiles.forEach(file => {
+                formData.append('images', file);
+            });
+
+            try {
+                const response = await fetch('/api/batch_predict', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                loading.classList.remove('show');
+                btn.disabled = false;
+                checkBatchReady();  // 恢复按钮状态
+
+                if (data.success) {
+                    displayBatchResult(data);
+                } else {
+                    result.innerHTML = `<div class="error-message">${data.error || '识别失败'}</div>`;
+                    result.classList.add('show');
+                }
+            } catch (error) {
+                loading.classList.remove('show');
+                btn.disabled = false;
+                checkBatchReady();  // 恢复按钮状态
+                result.innerHTML = `<div class="error-message">网络错误: ${error.message}</div>`;
+                result.classList.add('show');
+            }
+        }
+
+        // 分批次识别
+        async function predictBatchInBatches() {
+            if (batchFiles.length === 0) {
+                alert('请至少选择一张图片！');
+                return;
+            }
+
+            if (batchFiles.length <= 50) {
+                // 如果不超过50个，直接识别
+                predictBatch();
+                return;
+            }
+
+            const batchSize = 50;
+            const totalBatches = Math.ceil(batchFiles.length / batchSize);
+            let allResults = {
+                success: true,
+                total: 0,
+                total_uploaded: batchFiles.length,
+                processed: 0,
+                exceeded_count: 0,
+                grouped_results: [],
+                failed_results: []
+            };
+
+            const loading = document.getElementById('batch-loading');
+            const result = document.getElementById('batch-result');
+            const btn = document.getElementById('batch-predict-btn');
+
+            loading.classList.add('show');
+            result.classList.remove('show');
+            btn.disabled = true;
+
+            try {
+                // 分批处理
+                for (let i = 0; i < totalBatches; i++) {
+                    const start = i * batchSize;
+                    const end = Math.min(start + batchSize, batchFiles.length);
+                    const batch = batchFiles.slice(start, end);
+
+                    const formData = new FormData();
+                    batch.forEach(file => {
+                        formData.append('images', file);
+                    });
+
+                    const response = await fetch('/api/batch_predict', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // 合并结果
+                        allResults.total += data.total;
+                        allResults.processed += data.processed;
+                        
+                        // 合并分组结果
+                        data.grouped_results.forEach(group => {
+                            const existingGroup = allResults.grouped_results.find(g => g.coin_name === group.coin_name);
+                            if (existingGroup) {
+                                existingGroup.items = existingGroup.items.concat(group.items);
+                            } else {
+                                allResults.grouped_results.push(group);
+                            }
+                        });
+                        
+                        // 合并失败结果
+                        allResults.failed_results = allResults.failed_results.concat(data.failed_results);
+                    }
+                }
+
+                loading.classList.remove('show');
+                btn.disabled = false;
+                checkBatchReady();  // 恢复按钮状态
+
+                displayBatchResult(allResults, true);  // true表示是分批次识别
+
+            } catch (error) {
+                loading.classList.remove('show');
+                btn.disabled = false;
+                checkBatchReady();  // 恢复按钮状态
+                result.innerHTML = `<div class="error-message">网络错误: ${error.message}</div>`;
+                result.classList.add('show');
+            }
+        }
+
+        function displayBatchResult(data, isBatchMode = false) {
+            const result = document.getElementById('batch-result');
+            let html = '';
+            
+            // 显示超出数量的提示
+            if (data.exceeded_count > 0) {
+                html += `
+                    <div class="error-message" style="background: #fff3cd; color: #856404; border-left-color: #ffc107;">
+                        <strong>⚠ 超出数量限制</strong> - 您上传了 ${data.total_uploaded} 张图片，系统已识别前 ${data.processed} 张，
+                        剩余 ${data.exceeded_count} 张未识别。
+                        ${!isBatchMode ? '<br><button class="btn" onclick="predictBatchInBatches()" style="margin-top: 10px;">分批次识别全部图片</button>' : ''}
+                    </div>
+                `;
+            }
+            
+            html += `<div class="success-message">批量识别完成！共识别 ${data.total} 张图片</div>`;
+
+            // 按币种分组显示
+            if (data.grouped_results && data.grouped_results.length > 0) {
+                data.grouped_results.forEach((group) => {
+                    html += `
+                        <div class="coin-group">
+                            <div class="coin-group-header">
+                                <h3>${group.coin_name}</h3>
+                                <div class="result-info">
+                                    <div class="info-item">
+                                        <div class="info-label">朝代</div>
+                                        <div class="info-value">${group.info.dynasty}</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">材质</div>
+                                        <div class="info-value">${group.info.material}</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">数量</div>
+                                        <div class="info-value">${group.items.length} 张</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="history-text">
+                                <strong>历史介绍：</strong>${group.info.history}
+                            </div>
+                            <div class="coin-images-grid">
+                    `;
+                    
+                    // 显示该币种的所有图片
+                    group.items.forEach((item) => {
+                        html += `
+                            <div class="coin-image-item">
+                                <img src="${item.image_base64}" alt="${item.filename}">
+                                <div class="filename">${item.filename}</div>
+                                <div style="font-size: 0.8em; color: #999; margin-top: 5px;">
+                                    置信度: ${(item.confidence * 100).toFixed(1)}%
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            // 显示识别失败的图片
+            if (data.failed_results && data.failed_results.length > 0) {
+                html += `<div class="coin-group" style="border-left: 4px solid #c62828;">`;
+                html += `<div class="coin-group-header"><h3 style="color: #c62828;">识别失败的图片</h3></div>`;
+                data.failed_results.forEach((item) => {
+                    html += `
+                        <div class="batch-result-item" style="border-left-color: #c62828;">
+                            <h4>${item.filename}</h4>
+                            <div class="error-message">${item.error || '识别失败'}</div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            }
+
+            result.innerHTML = html;
+            result.classList.add('show');
+        }
+    </script>
+</body>
+</html>

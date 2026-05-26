@@ -1,0 +1,22 @@
+# PyCharm
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# 模型文件
+*.pth
+*.pt
+
+# 数据集
+数据集/
+
+# 运行结果
+results/
+uploads/
+
+# Windows
+Thumbs.db
+Desktop.ini

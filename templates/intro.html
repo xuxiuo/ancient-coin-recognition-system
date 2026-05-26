@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>清币慧眼通 - 系统介绍</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft YaHei', 'SimHei', Arial, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #dfe8ff 0%, #ffe7f1 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .card {
+            width: min(1180px, 95vw);
+            background: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(255,245,252,0.92));
+            border-radius: 28px;
+            box-shadow: 0 26px 70px rgba(124, 130, 255, 0.25);
+            padding: 80px 70px;
+            text-align: center;
+        }
+        .title {
+            font-size: clamp(30px, 4vw, 44px);
+            color: #151f3c;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            margin-bottom: 16px;
+        }
+        .subtitle {
+            font-size: clamp(17px, 2.5vw, 21px);
+            color: #3f4966;
+            margin-bottom: 28px;
+            line-height: 1.6;
+        }
+        .feature {
+            font-size: 16px;
+            color: #4a5570;
+            margin: 6px 0;
+            line-height: 1.6;
+        }
+        .btn {
+            display: inline-block;
+            padding: 15px 42px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #6a7bff 0%, #ff70b8 100%);
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 17px;
+            box-shadow: 0 18px 40px rgba(102, 126, 234, 0.35);
+            transition: all 0.2s;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 22px 48px rgba(102,126,234,0.45); }
+        .support-line {
+            margin-top: 24px;
+            font-size: 15px;
+            color: #4a5570;
+        }
+        .support-line a {
+            color: #6a7bff;
+            text-decoration: none;
+            margin-left: 8px;
+            font-weight: 600;
+        }
+        .support-line a:hover { text-decoration: underline; }
+        /* modal */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+        .modal {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px 26px;
+            width: min(520px, 92vw);
+            box-shadow: 0 18px 50px rgba(0,0,0,0.25);
+        }
+        .modal h3 {
+            margin-bottom: 14px;
+            color: #333;
+        }
+        .coin-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+        }
+        .pill {
+            background: #eef2ff;
+            color: #4c51bf;
+            border-radius: 999px;
+            padding: 8px 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .modal-close {
+            margin-top: 16px;
+            display: inline-block;
+            color: #6a7bff;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="title">清币慧眼通</div>
+        <div class="subtitle">告别人工鉴别繁琐，AI 助力清代钱币识别</div>
+        <div class="feature">单币识别：上传正反面，自动判断匹配并输出币种、朝代、材质与历史简介。</div>
+        <div class="feature">批量识别：一次上传多张图片，自动分组展示并分类保存，支持超量分批处理。</div>
+        <a class="btn" href="/index">开始使用</a>
+        <div class="support-line">
+            支持 20 种清代币种精准识别
+            <a href="javascript:void(0)" id="show-coins">查看全部币种</a>
+        </div>
+    </div>
+    <div class="modal-backdrop" id="modal">
+        <div class="modal">
+            <h3>支持识别的币种（20种）</h3>
+            <div class="coin-list">
+                <div class="pill">大清铜币</div><div class="pill">大清银币</div><div class="pill">道光通宝</div><div class="pill">光绪通宝</div><div class="pill">光绪元宝</div>
+                <div class="pill">光绪重宝</div><div class="pill">嘉庆通宝</div><div class="pill">康熙通宝</div><div class="pill">利用通宝</div><div class="pill">祺祥通宝</div>
+                <div class="pill">乾隆宝藏</div><div class="pill">乾隆通宝</div><div class="pill">顺治通宝</div><div class="pill">同治通宝</div><div class="pill">同治重宝</div>
+                <div class="pill">咸丰通宝</div><div class="pill">咸丰重宝</div><div class="pill">宣统通宝</div><div class="pill">雍正通宝</div><div class="pill">昭武通宝</div>
+            </div>
+            <div class="modal-close" id="close-modal">关闭</div>
+        </div>
+    </div>
+    <script>
+        const modal = document.getElementById('modal');
+        const openBtn = document.getElementById('show-coins');
+        const closeBtn = document.getElementById('close-modal');
+        openBtn.onclick = () => { modal.style.display = 'flex'; };
+        closeBtn.onclick = () => { modal.style.display = 'none'; };
+        modal.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+    </script>
+</body>
+</html>
+
