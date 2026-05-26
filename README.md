@@ -1,10 +1,11 @@
-# 古钱币识别系统（清币慧眼通）
+<img width="358" height="292" alt="image" src="https://github.com/user-attachments/assets/c62c765d-539f-41f6-aa1e-a6a14c4f0d61" /># 古钱币识别系统（清币慧眼通）
 
+<img width="2804" height="1534" alt="屏幕截图 2026-05-26 143549" src="https://github.com/user-attachments/assets/498f90d4-7e1c-4c1c-820b-53eeede3f108" />
 
 
 基于 Flask + PyTorch + ResNet18 的古钱币智能识别系统，支持单币识别、正反面配对验证、批量识别以及古钱币信息查询。
 
-<img src="README.assets/image-20260526144338186-1779777823394-1-1779777825252-3.png" alt="image-20260526144338186" style="zoom:50%;" />
+
 
 ## 项目简介
 
@@ -56,11 +57,11 @@
 - 正反面不匹配提示
 - 模型预测异常处理
 
-<img src="README.assets/image-20260526144433203-1779777875611-5-1779777876972-7.png" alt="image-20260526144433203" style="zoom:50%;" />
+<img width="2565" height="1546" alt="屏幕截图 2026-05-26 144423" src="https://github.com/user-attachments/assets/fc4adb96-aef5-4af6-9ec4-f033934d70b7" />
 
-![image-20260526144515959](README.assets/image-20260526144515959-1779777917982-9-1779777919238-11.png)![image-20260526144729186](README.assets/image-20260526144729186.png)
-
-![image-20260526144842877](README.assets/image-20260526144842877.png)
+<img width="2412" height="1503" alt="屏幕截图 2026-05-26 144512" src="https://github.com/user-attachments/assets/8fe99ede-c4ac-4f36-b118-e36349166354" />
+<img width="2504" height="1525" alt="屏幕截图 2026-05-26 144726" src="https://github.com/user-attachments/assets/57ba7147-7aae-453f-aa93-544185b85d19" />
+<img width="2415" height="1418" alt="屏幕截图 2026-05-26 144835" src="https://github.com/user-attachments/assets/804eef9a-92c5-45ad-9ef1-c938fbe3ac96" />
 
 ------
 
