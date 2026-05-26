@@ -1,6 +1,4 @@
-<img width="358" height="292" alt="image" src="https://github.com/user-attachments/assets/c62c765d-539f-41f6-aa1e-a6a14c4f0d61" /># 古钱币识别系统（清币慧眼通）
-
-<img width="2804" height="1534" alt="屏幕截图 2026-05-26 143549" src="https://github.com/user-attachments/assets/498f90d4-7e1c-4c1c-820b-53eeede3f108" />
+### 古钱币识别系统（清币慧眼通）
 
 
 基于 Flask + PyTorch + ResNet18 的古钱币智能识别系统，支持单币识别、正反面配对验证、批量识别以及古钱币信息查询。
@@ -15,6 +13,7 @@
 
 系统采用 ResNet18 预训练模型进行迁移学习训练，可识别 20 种古钱币（40 个类别，包含正反面），并提供币种信息展示、批量识别和结果分类保存等功能。
 
+<img width="2804" height="1534" alt="屏幕截图 2026-05-26 143549" src="https://github.com/user-attachments/assets/498f90d4-7e1c-4c1c-820b-53eeede3f108" />
 ------
 
 ## 功能特点
